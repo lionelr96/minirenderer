@@ -29,8 +29,8 @@ int main(int argc, char** argv)
 
     // line(-200 + 300, -100 + 300, 240 + 300, 120 + 300, image, white);
     int position_shift = 250;
-	float distance = 1;
-	int position_base = 100;
+    float distance = 1;
+    int position_base = 100;
 
     Point2f a(-200 + position_shift, -250 + position_shift);
     Point2f b(200 + position_shift, 50 + position_shift);
@@ -47,38 +47,26 @@ int main(int argc, char** argv)
     Vec3f vDf(-position_base + position_shift, -position_base + position_shift, 1);
 
     // four back vertices
-    Vec3f vAb(-1, 1, 2);
-    Vec3f vBb(1, 1, 2);
-    Vec3f vCb(1, -1, 2);
-    Vec3f vDb(-1, -1, 2);
+    Vec3f vAb(-position_base + position_shift, position_base + position_shift, 1.3);
+    Vec3f vBb(position_base + position_shift, position_base + position_shift, 1.3);
+    Vec3f vCb(position_base + position_shift, -position_base + position_shift, 1.3);
+    Vec3f vDb(-position_base + position_shift, -position_base + position_shift, 1.3);
 
-	// draw_wireframe_triangle(a, b, c, image, green);
-
-	std::cout << vAf[0] << " ";
-	std::cout << vAf[1] << " ";
-	std::cout << vAf[2] << std::endl;
-
-	
-	std::cout << vBf[0] << std::endl;
-
-	// vAf = vAf * 1000;
-	// vBf = vBf * 1000;
-	// vCb = vCb * 1000;
-	// vDb = vDb * 1000;
-
-	// std::cout << vBf[0] << std::endl;
-
-    line(project_vertex(vAf, distance), project_vertex(vBf, distance), image, blue);
+	// the front-to-back edges
+	line(project_vertex(vAf, distance), project_vertex(vBf, distance), image, blue);
     line(project_vertex(vBf, distance), project_vertex(vCf, distance), image, blue);
     line(project_vertex(vCf, distance), project_vertex(vDf, distance), image, blue);
-	line(project_vertex(vDf, distance), project_vertex(vAf, distance), image, blue);
+    line(project_vertex(vDf, distance), project_vertex(vAf, distance), image, blue);
 
-	// image.set(4.5, 6.5, blue);
-	// image.set(6, 6, white);
+    line(project_vertex(vAb, distance), project_vertex(vBb, distance), image, red);
+    line(project_vertex(vBb, distance), project_vertex(vCb, distance), image, red);
+    line(project_vertex(vCb, distance), project_vertex(vDb, distance), image, red);
+    line(project_vertex(vDb, distance), project_vertex(vAb, distance), image, red);
 
-    // Point2f
-
-    // draw_wireframe()
+    line(project_vertex(vAf, distance), project_vertex(vAb, distance), image, green);
+    line(project_vertex(vBf, distance), project_vertex(vBb, distance), image, green);
+    line(project_vertex(vCf, distance), project_vertex(vCb, distance), image, green);
+    line(project_vertex(vDf, distance), project_vertex(vDb, distance), image, green);
 
     image.flip_vertically();
     image.write_tga_file("output_cube.tga");
@@ -147,7 +135,7 @@ void line(Point2i a, Point2i b, TGAImage& image, TGAColor color)
             std::swap(a.x, b.x);
             std::swap(a.y, b.y);
         }
-        std::vector<float> xs = interpolate(a.y, a.x, b.y, a.x);
+        std::vector<float> xs = interpolate(a.y, a.x, b.y, b.x);
         for (float y = a.y; y <= b.y; ++y) {
             image.set(xs[y - a.y], y, color);
         }
