@@ -3,7 +3,7 @@
 #include <utility>
 
 
-class Point {
+struct Point {
 public:
     float x, y;
 
