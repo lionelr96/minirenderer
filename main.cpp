@@ -1,6 +1,8 @@
+#include "geometry.h"
 #include "tgaimage.h"
 #include <cmath>
 #include <iostream>
+#include <utility>
 #include <vector>
 
 const TGAColor white = TGAColor(255, 255, 255, 255);
@@ -10,21 +12,76 @@ const TGAColor green = TGAColor(0, 255, 0, 255);
 
 std::vector<float> interpolate(float i0, float d0, float i1, float d1);
 void line(float x0, float y0, float x1, float y1, TGAImage& image, TGAColor color);
-void draw_wireframe(float x0, float y0, float x1, float y1, float x2, float y2, TGAImage& image, TGAColor color);
+void line(Point2f a, Point2f b, TGAImage& image, TGAColor color);
+void line(Point2i a, Point2i b, TGAImage& image, TGAColor color);
+// void draw_wireframe(float x0, float y0, float x1, float y1, float x2, float y2, TGAImage& image, TGAColor color);
+void draw_wireframe_triangle(Point2f a, Point2f b, Point2f c, TGAImage& image, TGAColor color);
+void draw_wireframe_triangle(Point2i a, Point2i b, Point2i c, TGAImage& image, TGAColor color);
+// void draw_wireframe_square(Point2f a, Point2f b, Point2f c, Point2f d, TGAImage& image, TGAColor color);
 void draw_filled_triangle(float x0, float y0, float x1, float y1, float x2, float y2, TGAImage& image, TGAColor color);
+// std::pair<float, float> project_vertex(Vec3f v, float d);
+// Point2f project_vertex(Vec3f v, float d);
+Point2i project_vertex(Vec3f v, float d);
 
 int main(int argc, char** argv)
 {
-    TGAImage image(1000, 1000, TGAImage::RGB);
+    TGAImage image(50, 50, TGAImage::RGB);
 
     // line(-200 + 300, -100 + 300, 240 + 300, 120 + 300, image, white);
-    int position_shift = 500;
-    draw_wireframe(-200 + position_shift, -250 + position_shift, 200 + position_shift, 50 + position_shift, 20 + position_shift, 250 + position_shift, image, green);
+    int position_shift = 5;
+	float distance = 1;
+	int position_base = 1;
 
-    draw_filled_triangle(-200 + position_shift, -250 + position_shift, 200 + position_shift, 50 + position_shift, 20 + position_shift, 250 + position_shift, image, green);
+    Point2f a(-200 + position_shift, -250 + position_shift);
+    Point2f b(200 + position_shift, 50 + position_shift);
+    Point2f c(20 + position_shift, 250 + position_shift);
+
+    // draw_wireframe(-200 + position_shift, -250 + position_shift, 200 + position_shift, 50 + position_shift, 20 + position_shift, 250 + position_shift, image, green);
+
+    // draw_filled_triangle(-200 + position_shift, -250 + position_shift, 200 + position_shift, 50 + position_shift, 20 + position_shift, 250 + position_shift, image, green);
+
+    // four front vertices
+    Vec3f vAf(-position_base + position_shift, position_base + position_shift, position_base);
+    Vec3f vBf(position_base + position_shift, position_base + position_shift, position_base);
+    Vec3f vCf(position_base + position_shift, -position_base + position_shift, position_base);
+    Vec3f vDf(-position_base + position_shift, -position_base + position_shift, position_base);
+
+    // four back vertices
+    Vec3f vAb(-1, 1, 1);
+    Vec3f vBb(1, 1, 2);
+    Vec3f vCb(1, -1, 1);
+    Vec3f vDb(-1, -1, 1);
+
+	// draw_wireframe_triangle(a, b, c, image, green);
+
+	std::cout << vAf[0] << " ";
+	std::cout << vAf[1] << " ";
+	std::cout << vAf[2] << std::endl;
+
+	
+	std::cout << vBf[0] << std::endl;
+
+	// vAf = vAf * 1000;
+	// vBf = vBf * 1000;
+	// vCb = vCb * 1000;
+	// vDb = vDb * 1000;
+
+	// std::cout << vBf[0] << std::endl;
+
+    line(project_vertex(vAf, distance), project_vertex(vBf, distance), image, blue);
+    line(project_vertex(vBf, distance), project_vertex(vCf, distance), image, blue);
+    line(project_vertex(vCf, distance), project_vertex(vDf, distance), image, blue);
+	line(project_vertex(vDf, distance), project_vertex(vAf, distance), image, blue);
+
+	// image.set(4.5, 6.5, blue);
+	// image.set(6, 6, white);
+
+    // Point2f
+
+    // draw_wireframe()
 
     image.flip_vertically();
-    image.write_tga_file("output.tga");
+    image.write_tga_file("output_cube.tga");
 
     return 0;
 }
@@ -39,7 +96,7 @@ std::vector<float> interpolate(float i0, float d0, float i1, float d1)
     float a = (d1 - d0) / (i1 - i0);
     float d = d0;
 
-    for (int i = i0; i < i1; ++i) {
+    for (int i = i0; i <= i1; ++i) {
         values.push_back(d);
         d = d + a;
     }
@@ -73,12 +130,78 @@ void line(float x0, float y0, float x1, float y1, TGAImage& image, TGAColor colo
     }
 }
 
-void draw_wireframe(float x0, float y0, float x1, float y1, float x2, float y2, TGAImage& image, TGAColor color)
+void line(Point2i a, Point2i b, TGAImage& image, TGAColor color)
 {
-    line(x0, y0, x1, y1, image, color);
-    line(x1, y1, x2, y2, image, color);
-    // std::cout << x0 << ", " << y0 << ", " << x1 << ", " << y1 << ", " << x2 << ", " << y2 << std::endl;
-    line(x2, y2, x0, y0, image, color);
+    if (std::abs(b.x - a.x) > std::abs(b.y - a.y)) {
+        if (a.x > b.x) {
+            std::swap(a.x, b.x);
+            std::swap(a.y, b.y);
+        }
+        std::vector<float> ys = interpolate(a.x, a.y, b.x, b.y);
+
+        for (float x = a.x; x <= b.x; ++x) {
+            image.set(x, ys[x - a.x], color);
+        }
+    } else {
+        if (a.y > b.y) {
+            std::swap(a.x, b.x);
+            std::swap(a.y, b.y);
+        }
+        std::vector<float> xs = interpolate(a.y, a.x, b.y, a.x);
+        for (float y = a.y; y <= b.y; ++y) {
+            image.set(xs[y - a.y], y, color);
+        }
+    }
+}
+
+void line(Point2f a, Point2f b, TGAImage& image, TGAColor color)
+{
+    if (std::abs(b.x - a.x) > std::abs(b.y - a.y)) {
+        if (a.x > b.x) {
+            std::swap(a.x, b.x);
+            std::swap(a.y, b.y);
+        }
+        std::vector<float> ys = interpolate(a.x, a.y, b.x, b.y);
+
+        for (float x = a.x; x < b.x; ++x) {
+            image.set(x, ys[x - a.x], color);
+        }
+    } else {
+        if (a.y > b.y) {
+            std::swap(a.x, b.x);
+            std::swap(a.y, b.y);
+        }
+        std::vector<float> xs = interpolate(a.y, a.x, b.y, a.x);
+        for (float y = a.y; y < b.y; ++y) {
+            image.set(xs[y - a.y], y, color);
+        }
+    }
+}
+
+// void draw_wireframe(float x0, float y0, float x1, float y1, float x2, float y2, TGAImage& image, TGAColor color)
+// {
+//     line(x0, y0, x1, y1, image, color);
+//     line(x1, y1, x2, y2, image, color);
+//     // std::cout << x0 << ", " << y0 << ", " << x1 << ", " << y1 << ", " << x2 << ", " << y2 << std::endl;
+//     line(x2, y2, x0, y0, image, color);
+// }
+
+void draw_wireframe_triangle(Point2f a, Point2f b, Point2f c, TGAImage& image, TGAColor color)
+{
+    line(a.x, a.y, b.x, b.y, image, color);
+    line(b.x, b.y, c.x, c.y, image, color);
+    line(c.x, c.y, a.x, a.y, image, color);
+
+    draw_filled_triangle(a.x, a.y, b.x, b.y, c.x, c.y, image, color);
+}
+
+void draw_wireframe_triangle(Point2i a, Point2i b, Point2i c, TGAImage& image, TGAColor color)
+{
+    line(a.x, a.y, b.x, b.y, image, color);
+    line(b.x, b.y, c.x, c.y, image, color);
+    line(c.x, c.y, a.x, a.y, image, color);
+
+    draw_filled_triangle(a.x, a.y, b.x, b.y, c.x, c.y, image, color);
 }
 
 std::vector<float> concatenate(std::vector<float> a, std::vector<float> b)
@@ -138,4 +261,13 @@ void draw_filled_triangle(float x0, float y0, float x1, float y1, float x2, floa
             image.set(x, y, color);
         }
     }
+}
+
+// std::pair<float, float> project_vertex(Vec3f v, float d) {
+// 	return std::make_pair(v.x * d / v.z, v.y * d / v.z);
+// }
+
+Point2i project_vertex(Vec3f v, float d)
+{
+    return Point2i(v.x * d / v.z, v.y * d / v.z);
 }
