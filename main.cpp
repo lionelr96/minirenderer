@@ -25,12 +25,12 @@ Point2i project_vertex(Vec3f v, float d);
 
 int main(int argc, char** argv)
 {
-    TGAImage image(50, 50, TGAImage::RGB);
+    TGAImage image(500, 500, TGAImage::RGB);
 
     // line(-200 + 300, -100 + 300, 240 + 300, 120 + 300, image, white);
-    int position_shift = 5;
+    int position_shift = 250;
 	float distance = 1;
-	int position_base = 1;
+	int position_base = 100;
 
     Point2f a(-200 + position_shift, -250 + position_shift);
     Point2f b(200 + position_shift, 50 + position_shift);
@@ -41,16 +41,16 @@ int main(int argc, char** argv)
     // draw_filled_triangle(-200 + position_shift, -250 + position_shift, 200 + position_shift, 50 + position_shift, 20 + position_shift, 250 + position_shift, image, green);
 
     // four front vertices
-    Vec3f vAf(-position_base + position_shift, position_base + position_shift, position_base);
-    Vec3f vBf(position_base + position_shift, position_base + position_shift, position_base);
-    Vec3f vCf(position_base + position_shift, -position_base + position_shift, position_base);
-    Vec3f vDf(-position_base + position_shift, -position_base + position_shift, position_base);
+    Vec3f vAf(-position_base + position_shift, position_base + position_shift, 1);
+    Vec3f vBf(position_base + position_shift, position_base + position_shift, 1);
+    Vec3f vCf(position_base + position_shift, -position_base + position_shift, 1);
+    Vec3f vDf(-position_base + position_shift, -position_base + position_shift, 1);
 
     // four back vertices
-    Vec3f vAb(-1, 1, 1);
+    Vec3f vAb(-1, 1, 2);
     Vec3f vBb(1, 1, 2);
-    Vec3f vCb(1, -1, 1);
-    Vec3f vDb(-1, -1, 1);
+    Vec3f vCb(1, -1, 2);
+    Vec3f vDb(-1, -1, 2);
 
 	// draw_wireframe_triangle(a, b, c, image, green);
 
