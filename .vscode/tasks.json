@@ -1,0 +1,64 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "clang build active file",
+			"command": "/usr/bin/clang",
+			"args": [
+				"-std=c11",
+				"-stdlib=libc++",
+				"-ggdb3",
+				"-Wall",
+				"-Werror",
+				"-Wextra",
+				"-pedantic-errors",
+				"-Wno-error=unused-variable",
+				"-Wuninitialized",
+				"${file}",
+				"-o",
+				"${fileDirname}/${fileBasenameNoExtension}"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "clang++ build active file",
+			"command": "/usr/bin/clang++",
+			"args": [
+				// "-O2",
+				"-std=c++17",
+				"-stdlib=libc++",
+				"-ggdb3",
+				// "-Wall",
+				// "-Werror",
+				// "-Wextra",
+				// "-pedantic-errors",
+				// "-Wno-error=unused-variable",
+				// "-Wuninitialized",
+				// "-fno-elide-constructors",
+				// "-g",
+				// "${file}",
+				"${fileDirname}/*.cpp",
+				"-o",
+				"${fileDirname}/${fileBasenameNoExtension}"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+	]
+}
