@@ -9,6 +9,9 @@ const TGAColor white = TGAColor(255, 255, 255, 255);
 const TGAColor red = TGAColor(255, 0, 0, 255);
 const TGAColor blue = TGAColor(0, 0, 255, 255);
 const TGAColor green = TGAColor(0, 255, 0, 255);
+const TGAColor yellow = TGAColor(255, 255, 0, 255);
+const TGAColor purple = TGAColor(255, 0, 255, 255);
+const TGAColor cyan = TGAColor(0, 255, 255, 255);
 
 std::vector<float> interpolate(float i0, float d0, float i1, float d1);
 void line(float x0, float y0, float x1, float y1, TGAImage& image, TGAColor color);
@@ -22,15 +25,17 @@ void draw_filled_triangle(float x0, float y0, float x1, float y1, float x2, floa
 // std::pair<float, float> project_vertex(Vec3f v, float d);
 // Point2f project_vertex(Vec3f v, float d);
 Point2i project_vertex(Vec3f v, float d);
+void render(std::vector<Vec3f> vertices, std::vector<std::vector<int>> triangles, TGAImage& image, TGAColor color, float d);
+void render_triangle(std::vector<int> triangle, std::vector<Point2i> projected, TGAImage& image, TGAColor color, float d);
 
 int main(int argc, char** argv)
 {
     TGAImage image(500, 500, TGAImage::RGB);
 
     // line(-200 + 300, -100 + 300, 240 + 300, 120 + 300, image, white);
-	int position_x_shift = 200;
-	int position_y_shift = 300;
-	float distance = 1;
+    int position_x_shift = 200;
+    int position_y_shift = 300;
+    float distance = 1;
     int position_base = 100;
 
     // Point2f a(-200 + position_shift, -250 + position_shift);
@@ -42,35 +47,64 @@ int main(int argc, char** argv)
     // draw_filled_triangle(-200 + position_shift, -250 + position_shift, 200 + position_shift, 50 + position_shift, 20 + position_shift, 250 + position_shift, image, green);
 
     // four front vertices
-    Vec3f vAf(-position_base + position_x_shift, position_base + position_y_shift, 1);
-    Vec3f vBf(position_base + position_x_shift, position_base + position_y_shift, 1);
-    Vec3f vCf(position_base + position_x_shift, -position_base + position_y_shift, 1);
-    Vec3f vDf(-position_base + position_x_shift, -position_base + position_y_shift, 1);
+    // Vec3f vAf(-position_base + position_x_shift, position_base + position_y_shift, 1);
+    // Vec3f vBf(position_base + position_x_shift, position_base + position_y_shift, 1);
+    // Vec3f vCf(position_base + position_x_shift, -position_base + position_y_shift, 1);
+    // Vec3f vDf(-position_base + position_x_shift, -position_base + position_y_shift, 1);
 
-    // four back vertices
-    Vec3f vAb(-position_base + position_x_shift, position_base + position_y_shift, 1.3);
-    Vec3f vBb(position_base + position_x_shift, position_base + position_y_shift, 1.3);
-    Vec3f vCb(position_base + position_x_shift, -position_base + position_y_shift, 1.3);
-    Vec3f vDb(-position_base + position_x_shift, -position_base + position_y_shift, 1.3);
+    // // four back vertices
+    // Vec3f vAb(-position_base + position_x_shift, position_base + position_y_shift, 1.3);
+    // Vec3f vBb(position_base + position_x_shift, position_base + position_y_shift, 1.3);
+    // Vec3f vCb(position_base + position_x_shift, -position_base + position_y_shift, 1.3);
+    // Vec3f vDb(-position_base + position_x_shift, -position_base + position_y_shift, 1.3);
+
+    // the front face
+    // line(project_vertex(vAf, distance), project_vertex(vBf, distance), image, blue);
+    // line(project_vertex(vBf, distance), project_vertex(vCf, distance), image, blue);
+    // line(project_vertex(vCf, distance), project_vertex(vDf, distance), image, blue);
+    // line(project_vertex(vDf, distance), project_vertex(vAf, distance), image, blue);
+
+	// the back face
+	// line(project_vertex(vAb, distance), project_vertex(vBb, distance), image, red);
+    // line(project_vertex(vBb, distance), project_vertex(vCb, distance), image, red);
+    // line(project_vertex(vCb, distance), project_vertex(vDb, distance), image, red);
+    // line(project_vertex(vDb, distance), project_vertex(vAb, distance), image, red);
 
     // the front-to-back edges
-    line(project_vertex(vAf, distance), project_vertex(vBf, distance), image, blue);
-    line(project_vertex(vBf, distance), project_vertex(vCf, distance), image, blue);
-    line(project_vertex(vCf, distance), project_vertex(vDf, distance), image, blue);
-    line(project_vertex(vDf, distance), project_vertex(vAf, distance), image, blue);
+    // line(project_vertex(vAf, distance), project_vertex(vAb, distance), image, green);
+    // line(project_vertex(vBf, distance), project_vertex(vBb, distance), image, green);
+    // line(project_vertex(vCf, distance), project_vertex(vCb, distance), image, green);
+    // line(project_vertex(vDf, distance), project_vertex(vDb, distance), image, green);
 
-    line(project_vertex(vAb, distance), project_vertex(vBb, distance), image, red);
-    line(project_vertex(vBb, distance), project_vertex(vCb, distance), image, red);
-    line(project_vertex(vCb, distance), project_vertex(vDb, distance), image, red);
-    line(project_vertex(vDb, distance), project_vertex(vAb, distance), image, red);
+    std::vector<Vec3f> vertices {};
+    vertices.push_back(Vec3f(position_base + position_x_shift, position_base + position_y_shift, 1));
+    vertices.push_back(Vec3f(-position_base + position_x_shift, position_base + position_y_shift, 1));
+    vertices.push_back(Vec3f(-position_base + position_x_shift, -position_base + position_y_shift, 1));
+    vertices.push_back(Vec3f(position_base + position_x_shift, -position_base + position_y_shift, 1));
+    vertices.push_back(Vec3f(position_base + position_x_shift, position_base + position_y_shift, 1.3));
+    vertices.push_back(Vec3f(-position_base + position_x_shift, position_base + position_y_shift, 1.3));
+    vertices.push_back(Vec3f(-position_base + position_x_shift, -position_base + position_y_shift, 1.3));
+    vertices.push_back(Vec3f(position_base + position_x_shift, -position_base + position_y_shift, 1.3));
 
-    line(project_vertex(vAf, distance), project_vertex(vAb, distance), image, green);
-    line(project_vertex(vBf, distance), project_vertex(vBb, distance), image, green);
-    line(project_vertex(vCf, distance), project_vertex(vCb, distance), image, green);
-    line(project_vertex(vDf, distance), project_vertex(vDb, distance), image, green);
+    std::vector<std::vector<int>> triangles {
+        { 0, 1, 2, 0 },
+        { 0, 2, 3, 0 },
+        { 4, 0, 3, 1 },
+        { 4, 3, 7, 1 },
+        { 5, 4, 7, 2 },
+        { 5, 7, 6, 2 },
+        { 1, 5, 6, 3 },
+        { 1, 6, 2, 3 },
+        { 4, 5, 1, 4 },
+        { 4, 1, 0, 4 },
+        { 2, 6, 7, 5 },
+        { 2, 7, 3, 5 }
+    };
+
+    render(vertices, triangles, image, blue, distance);
 
     image.flip_vertically();
-    image.write_tga_file("output_cube.tga");
+    image.write_tga_file("output_cube2.tga");
 
     return 0;
 }
@@ -181,7 +215,7 @@ void draw_wireframe_triangle(Point2f a, Point2f b, Point2f c, TGAImage& image, T
     line(b.x, b.y, c.x, c.y, image, color);
     line(c.x, c.y, a.x, a.y, image, color);
 
-    draw_filled_triangle(a.x, a.y, b.x, b.y, c.x, c.y, image, color);
+    // draw_filled_triangle(a.x, a.y, b.x, b.y, c.x, c.y, image, color);
 }
 
 void draw_wireframe_triangle(Point2i a, Point2i b, Point2i c, TGAImage& image, TGAColor color)
@@ -190,7 +224,7 @@ void draw_wireframe_triangle(Point2i a, Point2i b, Point2i c, TGAImage& image, T
     line(b.x, b.y, c.x, c.y, image, color);
     line(c.x, c.y, a.x, a.y, image, color);
 
-    draw_filled_triangle(a.x, a.y, b.x, b.y, c.x, c.y, image, color);
+    // draw_filled_triangle(a.x, a.y, b.x, b.y, c.x, c.y, image, color);
 }
 
 std::vector<float> concatenate(std::vector<float> a, std::vector<float> b)
@@ -259,4 +293,26 @@ void draw_filled_triangle(float x0, float y0, float x1, float y1, float x2, floa
 Point2i project_vertex(Vec3f v, float d)
 {
     return Point2i(v.x * d / v.z, v.y * d / v.z);
+}
+
+void render_triangle(std::vector<int> triangle, std::vector<Point2i> projected, TGAImage& image, TGAColor color, float d)
+{
+	std::vector<TGAColor> colors = { red, green, blue, yellow, purple, cyan };
+    // TODO check values of triangle and match corresponding number with projected values
+    draw_wireframe_triangle(projected[triangle[0]], projected[triangle[1]], projected[triangle[2]], image, colors[triangle[3]]);
+    // std::cout << projected[0] << std::endl;
+    // projected[0].print_points();
+}
+
+void render(std::vector<Vec3f> vertices, std::vector<std::vector<int>> triangles, TGAImage& image, TGAColor color, float d)
+{
+    std::vector<Point2i> projected {};
+    for (auto v : vertices) {
+        projected.push_back(project_vertex(v, d));
+        // project_vertex(v, d).print_points();
+    }
+
+    for (auto t : triangles) {
+        render_triangle(t, projected, image, cyan, d);
+    }
 }

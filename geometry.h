@@ -1,16 +1,29 @@
 #ifndef __GEOMETRY__
 #define __GEOMETRY__
 
-#include <iostream>
-#include <vector>
 #include <cmath>
+#include <iostream>
 #include <utility>
+#include <vector>
 
 struct Point2i {
-	int x, y;
+    int x, y;
 
-	Point2i(): x(0), y(0) { }
-	Point2i(const int& x, const int& y): x(x), y(y) {}
+    Point2i()
+        : x(0)
+        , y(0)
+    {
+    }
+    Point2i(const int& x, const int& y)
+        : x(x)
+        , y(y)
+    {
+    }
+
+    void print_points()
+    {
+        std::cout << x << ", " << y << std::endl;
+    }
 };
 
 struct Point2f {
