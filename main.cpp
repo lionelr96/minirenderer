@@ -28,32 +28,33 @@ int main(int argc, char** argv)
     TGAImage image(500, 500, TGAImage::RGB);
 
     // line(-200 + 300, -100 + 300, 240 + 300, 120 + 300, image, white);
-    int position_shift = 250;
-    float distance = 1;
+	int position_x_shift = 200;
+	int position_y_shift = 300;
+	float distance = 1;
     int position_base = 100;
 
-    Point2f a(-200 + position_shift, -250 + position_shift);
-    Point2f b(200 + position_shift, 50 + position_shift);
-    Point2f c(20 + position_shift, 250 + position_shift);
+    // Point2f a(-200 + position_shift, -250 + position_shift);
+    // Point2f b(200 + position_shift, 50 + position_shift);
+    // Point2f c(20 + position_shift, 250 + position_shift);
 
     // draw_wireframe(-200 + position_shift, -250 + position_shift, 200 + position_shift, 50 + position_shift, 20 + position_shift, 250 + position_shift, image, green);
 
     // draw_filled_triangle(-200 + position_shift, -250 + position_shift, 200 + position_shift, 50 + position_shift, 20 + position_shift, 250 + position_shift, image, green);
 
     // four front vertices
-    Vec3f vAf(-position_base + position_shift, position_base + position_shift, 1);
-    Vec3f vBf(position_base + position_shift, position_base + position_shift, 1);
-    Vec3f vCf(position_base + position_shift, -position_base + position_shift, 1);
-    Vec3f vDf(-position_base + position_shift, -position_base + position_shift, 1);
+    Vec3f vAf(-position_base + position_x_shift, position_base + position_y_shift, 1);
+    Vec3f vBf(position_base + position_x_shift, position_base + position_y_shift, 1);
+    Vec3f vCf(position_base + position_x_shift, -position_base + position_y_shift, 1);
+    Vec3f vDf(-position_base + position_x_shift, -position_base + position_y_shift, 1);
 
     // four back vertices
-    Vec3f vAb(-position_base + position_shift, position_base + position_shift, 1.3);
-    Vec3f vBb(position_base + position_shift, position_base + position_shift, 1.3);
-    Vec3f vCb(position_base + position_shift, -position_base + position_shift, 1.3);
-    Vec3f vDb(-position_base + position_shift, -position_base + position_shift, 1.3);
+    Vec3f vAb(-position_base + position_x_shift, position_base + position_y_shift, 1.3);
+    Vec3f vBb(position_base + position_x_shift, position_base + position_y_shift, 1.3);
+    Vec3f vCb(position_base + position_x_shift, -position_base + position_y_shift, 1.3);
+    Vec3f vDb(-position_base + position_x_shift, -position_base + position_y_shift, 1.3);
 
-	// the front-to-back edges
-	line(project_vertex(vAf, distance), project_vertex(vBf, distance), image, blue);
+    // the front-to-back edges
+    line(project_vertex(vAf, distance), project_vertex(vBf, distance), image, blue);
     line(project_vertex(vBf, distance), project_vertex(vCf, distance), image, blue);
     line(project_vertex(vCf, distance), project_vertex(vDf, distance), image, blue);
     line(project_vertex(vDf, distance), project_vertex(vAf, distance), image, blue);
