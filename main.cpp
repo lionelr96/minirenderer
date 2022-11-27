@@ -1,3 +1,4 @@
+#include "Cube.h"
 #include "geometry.h"
 #include "tgaimage.h"
 #include <cmath>
@@ -27,6 +28,7 @@ void draw_filled_triangle(float x0, float y0, float x1, float y1, float x2, floa
 Point2i project_vertex(Vec3f v, float d);
 void render(std::vector<Vec3f> vertices, std::vector<std::vector<int>> triangles, TGAImage& image, TGAColor color, float d);
 void render_triangle(std::vector<int> triangle, std::vector<Point2i> projected, TGAImage& image, TGAColor color, float d);
+void render_scene(Cube c, TGAImage& image, TGAColor color, float d);
 
 int main(int argc, char** argv)
 {
@@ -37,6 +39,7 @@ int main(int argc, char** argv)
     int position_y_shift = 300;
     float distance = 1;
     int position_base = 100;
+    std::vector<Cube> cubes {};
 
     // Point2f a(-200 + position_shift, -250 + position_shift);
     // Point2f b(200 + position_shift, 50 + position_shift);
@@ -64,8 +67,8 @@ int main(int argc, char** argv)
     // line(project_vertex(vCf, distance), project_vertex(vDf, distance), image, blue);
     // line(project_vertex(vDf, distance), project_vertex(vAf, distance), image, blue);
 
-	// the back face
-	// line(project_vertex(vAb, distance), project_vertex(vBb, distance), image, red);
+    // the back face
+    // line(project_vertex(vAb, distance), project_vertex(vBb, distance), image, red);
     // line(project_vertex(vBb, distance), project_vertex(vCb, distance), image, red);
     // line(project_vertex(vCb, distance), project_vertex(vDb, distance), image, red);
     // line(project_vertex(vDb, distance), project_vertex(vAb, distance), image, red);
@@ -101,10 +104,20 @@ int main(int argc, char** argv)
         { 2, 7, 3, 5 }
     };
 
-    render(vertices, triangles, image, blue, distance);
+    // render(vertices, triangles, image, blue, distance);
+
+    Cube my_cube(Vec3f(0, 0, 5), vertices, triangles);
+    Cube my_second_cube(Vec3f(1, 2, 3), vertices, triangles);
+
+    cubes.push_back(my_cube);
+    cubes.push_back(my_second_cube);
+
+    for (auto c : cubes) {
+        render_scene(c, image, blue, distance);
+    }
 
     image.flip_vertically();
-    image.write_tga_file("output_cube2.tga");
+    image.write_tga_file("output_cube3.tga");
 
     return 0;
 }
@@ -297,11 +310,8 @@ Point2i project_vertex(Vec3f v, float d)
 
 void render_triangle(std::vector<int> triangle, std::vector<Point2i> projected, TGAImage& image, TGAColor color, float d)
 {
-	std::vector<TGAColor> colors = { red, green, blue, yellow, purple, cyan };
-    // TODO check values of triangle and match corresponding number with projected values
+    std::vector<TGAColor> colors = { red, green, blue, yellow, purple, cyan };
     draw_wireframe_triangle(projected[triangle[0]], projected[triangle[1]], projected[triangle[2]], image, colors[triangle[3]]);
-    // std::cout << projected[0] << std::endl;
-    // projected[0].print_points();
 }
 
 void render(std::vector<Vec3f> vertices, std::vector<std::vector<int>> triangles, TGAImage& image, TGAColor color, float d)
@@ -313,6 +323,20 @@ void render(std::vector<Vec3f> vertices, std::vector<std::vector<int>> triangles
     }
 
     for (auto t : triangles) {
+        render_triangle(t, projected, image, cyan, d);
+    }
+}
+
+void render_scene(Cube c, TGAImage& image, TGAColor color, float d)
+{
+    std::vector<Point2i> projected {};
+	for (auto v : c.vertices) {
+		auto v_prime = v + c.position;
+		projected.push_back(project_vertex(v_prime, d));
+        // project_vertex(v, d).print_points();
+    }
+
+    for (auto t : c.triangles) {
         render_triangle(t, projected, image, cyan, d);
     }
 }
